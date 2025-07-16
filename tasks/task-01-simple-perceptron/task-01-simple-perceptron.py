@@ -1,7 +1,8 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from sklearn.datasets import make_blobs
 from sklearn.model_selection import train_test_split
+
 
 class Perceptron:
     def __init__(self, seed=0, input_size=2, learning_rate=0.01, epochs=100):
@@ -15,25 +16,40 @@ class Perceptron:
         rng = np.random.default_rng(self.seed)
         ### START CODE HERE ###
         ### TODO: Initialize weights with small Gaussian noise using rng.normal
-
+        self.weights = rng.normal(0, 0.01, self.input_size + 1)
         ### END CODE HERE ###
 
     def activation(self, x):
         ### START CODE HERE ###
         ### TODO: Implement the step activation function
-        pass
+        return np.where(x >= 0, 1, -1)
         ### END CODE HERE ###
 
     def predict(self, X):
         ### START CODE HERE ###
         ### TODO: Add a bias term to X, compute dot product with weights, and apply activation
-        pass
+        # bias term
+        x_bias = np.column_stack((np.ones(X.shape[0]), X))
+        # dot product with weights
+        linear_output = np.dot(x_bias, self.weights)
+        #activation function
+        return self.activation(linear_output)
         ### END CODE HERE ###
 
     def fit(self, X, y):
         ### START CODE HERE ###
         ### TODO: Implement the perceptron learning rule using weight updates
-        pass
+        X_bias = np.column_stack((np.ones(X.shape[0]), X))
+        
+        for epoch in range(self.epochs):
+            for i in range(len(X)):
+                x_i = X_bias[i]
+                y_i = y[i]
+                
+                prediction = self.activation(x_i @ self.weights)
+                
+                if prediction != y_i:
+                    self.weights += self.learning_rate * (y_i - prediction) * x_i
         ### END CODE HERE ###
 
 def generate_data(seed=0, samples=200, noise=1.5):
