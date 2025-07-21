@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 
 
 class Perceptron:
-    def __init__(self, seed=0, input_size=2, learning_rate=0.01, epochs=100):
+    def __init__(self, seed=0, input_size=2, learning_rate=0.1, epochs=500):
         self.seed = seed
         self.learning_rate = learning_rate
         self.epochs = epochs
@@ -16,7 +16,7 @@ class Perceptron:
         rng = np.random.default_rng(self.seed)
         ### START CODE HERE ###
         ### TODO: Initialize weights with small Gaussian noise using rng.normal
-        self.weights = rng.normal(0, 0.01, self.input_size + 1)
+        self.weights = rng.normal(-1, 1.0, size=self.input_size + 1)
         ### END CODE HERE ###
 
     def activation(self, x):
@@ -25,32 +25,27 @@ class Perceptron:
         return np.where(x >= 0, 1, -1)
         ### END CODE HERE ###
 
+    #recebe uma matriz 2d
     def predict(self, X):
         ### START CODE HERE ###
         ### TODO: Add a bias term to X, compute dot product with weights, and apply activation
-        # bias term
-        x_bias = np.column_stack((np.ones(X.shape[0]), X))
-        # dot product with weights
-        linear_output = np.dot(x_bias, self.weights)
-        #activation function
-        return self.activation(linear_output)
+        X_with_bias = np.column_stack((np.ones(X.shape[0]), X))
+        return self.activation(np.dot(X_with_bias, self.weights))
         ### END CODE HERE ###
 
     def fit(self, X, y):
         ### START CODE HERE ###
         ### TODO: Implement the perceptron learning rule using weight updates
-        X_bias = np.column_stack((np.ones(X.shape[0]), X))
-        
         for epoch in range(self.epochs):
-            for i in range(len(X)):
-                x_i = X_bias[i]
-                y_i = y[i]
+            x_with_bias = np.insert(X,0,1,axis=1)
+            for input, true_label in zip(x_with_bias, y):
+                dot = np.dot(input, self.weights)
+                prediction = self.activation(dot);
                 
-                prediction = self.activation(x_i @ self.weights)
-                
-                if prediction != y_i:
-                    self.weights += self.learning_rate * (y_i - prediction) * x_i
-        ### END CODE HERE ###
+                if prediction != true_label:
+                    loss = (true_label - prediction)/2
+                    update = self.learning_rate * loss * input
+                    self.weights = self.weights + update
 
 def generate_data(seed=0, samples=200, noise=1.5):
     """
@@ -128,4 +123,3 @@ def main():
 if __name__ == "__main__":
 
     main()
-
