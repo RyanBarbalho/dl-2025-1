@@ -17,25 +17,42 @@ class Perceptron:
         rng = np.random.default_rng(self.seed)
         ### START CODE HERE ###
         ### TODO: Initialize weights with small Gaussian noise using rng.normal
-        pass
+        self.weights = rng.normal(-1,1.0, size=self.input_size + 1)# +1 por conta do bias
         ### END CODE HERE ###
 
     def activation(self, x):
         ### START CODE HERE ###
         ### TODO: Implement the step activation function
-        pass
+        return np.where(x >= 0, 1,-1) # se for maiorigual a 0, vira 1, se nao, -1
         ### END CODE HERE ###
 
     def predict(self, X):
         ### START CODE HERE ###
         ### TODO: Add bias term, compute dot product with weights, apply activation
-        pass
+        # preenche a coluna de cada linha das entradas xn com o numero 1, para ser o bias
+        #np.column_stack -> transforma um array de n 1s em uma coluna e insere na matriz X
+        X_with_bias = np.column_stack([np.ones(X.shape[0]), X])
+        product = np.dot(X_with_bias, self.weights)
+        return self.activation(product)
         ### END CODE HERE ###
 
     def fit(self, X, y):
         ### START CODE HERE ###
         ### TODO: Implement the perceptron learning algorithm
-        pass
+        for epoch in range(self.epochs):
+            #inicio as entradas
+            x_with_bias = np.insert( X, 0, 1, axis=1)
+            for input, true_label in zip(x_with_bias, y):
+                #para cada entrada e saida esperada
+                #input = array = serie de inputs, cada caso = x_with_bias
+                product = np.dot(input, self.weights) #produto de matriz entre entradas x1,x2,1 e w1,w2,w3
+                output = self.activation(product) # output = a
+                if output != true_label: #metrica => a !+ y
+                    loss = (true_label - output)/2 # loss = (y-a)/2
+                    update = self.learning_rate * loss * input # update = N * L(a,y) * xn
+                    self.weights = self.weights + update # weights = wn + L(a,y)
+                    
+        
         ### END CODE HERE ###
 
 #%%
