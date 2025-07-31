@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 
 #%%
 class Perceptron:
-    def __init__(self, seed=0, input_size=2, learning_rate=0.1, epochs=500):
+    def __init__(self, seed=0, input_size=2, learning_rate=0.01, epochs=1000):
         self.seed = seed
         self.learning_rate = learning_rate
         self.epochs = epochs
